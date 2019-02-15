@@ -1,0 +1,46 @@
+---
+- hosts: vm
+  vars:
+    hostname: "vm01"
+
+  tasks:
+  ### set dns ip address
+  - name: set DNS ip address
+    win_dns_client:
+      adapter_names: Ethernet
+      ipv4_addresses: "{{ dns_ip }}"
+  
+  ### set hostname
+  - name: change windows hostname
+    win_hostname:
+      name: "{{ hostname }}"
+    register: new_computer_name_result
+
+  - name: print name change status
+    debug:
+      msg: "{{ new_computer_name_result }}"
+    when: new_computer_name_result is changed
+
+  ### reboot to apply changes
+
+  - name: reboot after name change
+    win_reboot:
+    when: new_computer_name_result.reboot_required
+
+  ### join AD
+  - name: join AD
+    win_domain_membership:
+      dns_domain_name: "{{ domain }}"
+      hostname: "{{ hostname }}"
+      domain_admin_user: "administrator@{{domain}}"
+      domain_admin_password: "{{ domain_password }}"
+      state: domain
+    register: domain_result
+  - name: print domain status
+    debug:
+      msg: "{{ domain_result }}"
+
+  ### reboot to apply changes
+  - name: reboot after name change
+    win_reboot:
+    when: domain_result.reboot_required

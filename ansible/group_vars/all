@@ -1,0 +1,11 @@
+ansible_password: <YOUR WINDOWS ADMIN PASSWORD>
+
+domain: <YOUR DOMAIN NAME HERE>
+domain_password: <YOUR WINDOWS ADMIN PASSWORD (SHOULD BE THE SAME AS ANSIBLE PASSWORD)>
+
+ansible_user: 'administrator'
+ansible_connection: 'winrm'
+ansible_winrm_transport: 'basic'
+ansible_winrm_server_cert_validation: 'ignore'
+
+domain_user: 'administrator'

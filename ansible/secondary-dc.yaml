@@ -1,0 +1,84 @@
+---
+- hosts: secondary-dc
+  vars:
+    domain: "demo.local"
+    admin_pwd: "Oracle:1234567"
+    dc_name: "dc02"
+    dns_ip: "10.0.1.5"
+
+  tasks:
+  ### set dns ip address
+  - name: set DNS ip address
+    win_dns_client:
+      adapter_names: Ethernet
+      ip: "{{ dns-ip }}"
+  
+  ### set hostname
+  - name: change windows hostname
+    win_hostname:
+      name: "{{ hostname }}"
+    register: new_computer_name_result
+
+  - name: print name change status
+    debug:
+      msg: "{{ new_computer_name_result }}"
+    when: new_computer_name_result is changed
+
+  ### reboot to apply changes
+
+  - name: reboot after name change
+    win_reboot:
+    when: new_computer_name_result.reboot_required
+
+  ### join AD
+  - name: join AD
+    win_domain_membership:
+      dns_domain_name: "{{ domain }}"
+      hostname: "{{ hostname }}"
+      domain_admin_user: "administrator@{{domain}}"
+      domain_admin_password: "{{ admin-pwd }}"
+      state: domain
+    register: domain_result
+  - name: print domain status
+    debug:
+      msg: "{{ domain_result }}"
+
+  ### reboot to apply changes
+  - name: reboot after name change
+    win_reboot:
+    when: domain_result.reboot_required
+
+  ### install active directory
+  - name: install AD DS
+    win_feature:
+      name: AD-Domain-Services
+      include_management_tools: true
+      include_sub_features: true
+      state: present
+    register: adds_result
+
+  - name: print AD install status
+    debug:
+      msg: "{{ adds_result }}"
+
+  ### promote to secondary domain to existing domain
+  - name: promote to secondary domain controller
+    win_domain_controller:
+      dns_domain_name: "{{ domain }}"
+      domain_admin_user: "administrator@{{ domain }}"
+      domain_admin_password: "{{ admin-pwd }}"
+      safe_mode_password: "{{ admin-pwd }}"
+      state: domain_controller
+    register: add_existing_dc_result
+  
+  - name: print domain join results
+    debug:
+      msg: "{{ add_existing_dc_result }}"
+
+  - name: reboot after AD promotion
+    win_reboot:
+    when: add_existing_dc_result
+
+  - name: wait for reconnection
+    wait_for_connection:
+      timeout: 900
