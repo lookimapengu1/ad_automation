@@ -28,6 +28,9 @@ For Active Directory, there are a few pieces of information you need to provide:
   - at least 1 numeric character
   - at least 1 special character
   - length must be at least 12 characters
+The passwords also need to be entered into the following files:
+`cloud-init/windows_private_init.ps1`
+`cloud-init/windows_public_init.ps1`
 
 ## 3. Run the terraform script
 Open a terminal session inside this directory and run the following commands:
@@ -38,3 +41,6 @@ Open a terminal session inside this directory and run the following commands:
 ## 4. To clean up the environment:
 `terraform destroy --auto-approve`
   
+#TODO:
+- Add an option to deploy an HA AD cluster
+- Add an option to deploy multiple guest VMs
