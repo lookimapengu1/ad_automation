@@ -48,3 +48,5 @@ terraform apply --auto-approve
 #TODO:
 - Add an option to deploy an HA AD cluster
 - Add an option to deploy multiple guest VMs
+- Dynamically build ansible inventory with python script
+- Configure ansible host for SSH tunneling so you don't need the public Windows VM
