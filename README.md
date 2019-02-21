@@ -45,8 +45,21 @@ terraform plan
 terraform apply --auto-approve
 ```
 
-## 4. To clean up the environment:
-`terraform destroy --auto-approve`
+## 4. To access the VMs:
+- In the OCI console, navigate to the public Windows instance and copy the public IP of the intance
+- Open your remote desktop application of choice
+  - For the target, enter the IP address you copied
+  - The username is _Administrator_ and the password is the password you entered into the cloud init script
+- Once you're inside the bastion VM, open another remote desktop session and enter the following information:
+  - The private IP of your AD controller
+  - The username in the format administrator@_domain name_
+  - The admin password you specified earlier 
+You should also be able to acces your guest VM over the private IP in the same way.
+
+## 5. To clean up the environment:
+```
+terraform destroy --auto-approve
+```
   
 #TODO:
 - Add an option to deploy an HA AD cluster
