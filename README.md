@@ -4,6 +4,9 @@ To run this tutorial, you need:
 - an OCI account; the footprint should fit inside a trial environment if you're just testing out OCI
 - an OCI user that has an API key set up
 
+This tutorial will deploy the following infrastructure:
+![](/images/architecture.png)
+
 # To run the script:
 
 ## 1. Enter the following values into sample.env.vars
